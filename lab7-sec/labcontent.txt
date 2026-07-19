@@ -1,0 +1,538 @@
+MLIAEdu
+Tableau de bord
+Mes Cours
+Certifications
+Recommandations
+Ait Oihmane Lahsen
+Retour au cours
+LAB 7 : Analyse Dynamique Mobile avec MobSF
+
+Cours : Sécurité des applications mobiles
+Étapes
+Objectifs du lab
+
+    Comprendre en profondeur l’analyse dynamique (runtime) d’une application Android avec MobSF (Mobile Security Framework).
+    Configurer un émulateur propre sans Play Store.
+    Installer/lancer MobSF via Docker.
+    Tester l’APK vulnérable DIVA (Damn Insecure and Vulnerable Android App) en dynamique : logs runtime, trafic réseau, instrumentation Frida, proxy HTTPS, etc.
+    Apprendre à détecter des vulnérabilités en temps réel (stockage insecure, intents, hard-coded secrets, etc.).
+
+Uploaded Image
+MLIAEdu
+
+Plateforme d'apprentissage nouvelle génération, combinant expertise académique et intelligence artificielle pour forger les talents de demain.
+
+"L'éducation est la clé pour démocratiser l'IA et le génie logiciel et créer un avenir meilleur pour tous."
+Navigation
+
+    Tous les cours
+    Connexion
+    Inscription
+
+Contact
+Mme Oumaima AIT SAIDIngénieur Manager
+mliadedu@toubkalit.com
+© 2026 MLIAEdu Platform. Tous droits réservés.
+Conditions d'utilisation
+Confidentialité
+CGU
+
+MLIAEdu
+Tableau de bord
+Mes Cours
+Certifications
+Recommandations
+Ait Oihmane Lahsen
+Retour au cours
+LAB 7 : Analyse Dynamique Mobile avec MobSF
+
+Cours : Sécurité des applications mobiles
+Étapes
+Nature de l’émulateur (AVD sans Play Store)
+L’émulateur est un Android Virtual Device (AVD) créé avec Android Studio. C’est une machine virtuelle qui simule parfaitement un vrai smartphone Android sur votre PC (CPU, mémoire, écran, capteurs, etc.).
+Pourquoi « sans Play Store » ?
+
+    Quand vous créez un AVD, vous avez le choix entre :
+        Images Google Play → Play Store + Google Services préinstallés (bloat, processus en arrière-plan, interférences réseau).
+        Images Android pur (ou Google APIs sans Play) → environnement clean, sans aucun service Google.
+
+Avantages pour l’analyse de sécurité (raison pour laquelle on l’utilise ici) :
+
+    Pas de bruit de fond (Google Play Services, Firebase, etc.) → les logs et le trafic réseau sont purs.
+    MobSF peut appliquer son proxy HTTPS global sans conflit.
+    L’émulateur est non-production et facilement compatible avec le rooting/Frida (MobSF exige un émulateur rooté pour l’analyse dynamique complète).
+    Performances optimales sur x86_64 (votre PC).
+    Limite : jusqu’à Android API 30 (MobSF ne supporte pas les versions plus récentes pour l’instant car /system n’est plus writable).
+
+MobSF lance automatiquement Frida Server, installe son certificat CA pour intercepter le HTTPS, et capture tout ce que fait l’application en temps réel.
+MLIAEdu
+
+Plateforme d'apprentissage nouvelle génération, combinant expertise académique et intelligence artificielle pour forger les talents de demain.
+
+"L'éducation est la clé pour démocratiser l'IA et le génie logiciel et créer un avenir meilleur pour tous."
+Navigation
+
+    Tous les cours
+    Connexion
+    Inscription
+
+Contact
+Mme Oumaima AIT SAIDIngénieur Manager
+mliadedu@toubkalit.com
+© 2026 MLIAEdu Platform. Tous droits réservés.
+Conditions d'utilisation
+Confidentialité
+CGU
+MLIAEdu
+Tableau de bord
+Mes Cours
+Certifications
+Recommandations
+Ait Oihmane Lahsen
+Retour au cours
+LAB 7 : Analyse Dynamique Mobile avec MobSF
+
+Cours : Sécurité des applications mobiles
+Étapes
+Prérequis (5 min d’installation)
+
+    Android Studio (dernière version) + SDK Platform-Tools (ADB inclus).
+    Docker Desktop (installé et en cours d’exécution).
+    Git.
+    Minimum 8 Go RAM + processeur 64-bit.
+    Connexion internet (pour les premiers downloads).
+
+MLIAEdu
+
+Plateforme d'apprentissage nouvelle génération, combinant expertise académique et intelligence artificielle pour forger les talents de demain.
+
+"L'éducation est la clé pour démocratiser l'IA et le génie logiciel et créer un avenir meilleur pour tous."
+Navigation
+
+    Tous les cours
+    Connexion
+    Inscription
+
+Contact
+Mme Oumaima AIT SAIDIngénieur Manager
+mliadedu@toubkalit.com
+© 2026 MLIAEdu Platform. Tous droits réservés.
+Conditions d'utilisation
+Confidentialité
+CGU
+MLIAEdu
+Tableau de bord
+Mes Cours
+Certifications
+Recommandations
+Ait Oihmane Lahsen
+Retour au cours
+LAB 7 : Analyse Dynamique Mobile avec MobSF
+
+Cours : Sécurité des applications mobiles
+Étapes
+Étape 1 : Création de l’émulateur AVD sans Play Store (10 min)
+
+    Ouvrez Android Studio → Tools → AVD Manager → Create Virtual Device.
+    Choisissez un téléphone (ex. : Pixel 5 ou Pixel 6).
+    Dans System Image :
+        Sélectionnez Android (ou Google APIs) SANS « Google Play ».
+        Choisissez API 28 à 30 (recommandé : API 29 ou 30, x86_64).
+        Cliquez Download si besoin → Next → Finish.
+    Nommez l’AVD : MobSF_DIVA_API_30 (ou similaire).
+
+Vérification : L’image ne contient aucun Play Store. C’est exactement ce qu’on veut.
+MLIAEdu
+
+Plateforme d'apprentissage nouvelle génération, combinant expertise académique et intelligence artificielle pour forger les talents de demain.
+
+"L'éducation est la clé pour démocratiser l'IA et le génie logiciel et créer un avenir meilleur pour tous."
+Navigation
+
+    Tous les cours
+    Connexion
+    Inscription
+
+Contact
+Mme Oumaima AIT SAIDIngénieur Manager
+mliadedu@toubkalit.com
+© 2026 MLIAEdu Platform. Tous droits réservés.
+Conditions d'utilisation
+Confidentialité
+CGU
+MLIAEdu
+Tableau de bord
+Mes Cours
+Certifications
+Recommandations
+Ait Oihmane Lahsen
+Retour au cours
+LAB 7 : Analyse Dynamique Mobile avec MobSF
+
+Cours : Sécurité des applications mobiles
+Étapes
+Étape 2 : Cloner MobSF pour utiliser les scripts AVD officiels (2 min)
+Ouvrez un terminal / invite de commandes et tapez :
+Bash
+
+git clone https://github.com/MobSF/Mobile-Security-Framework-MobSF.git
+cd Mobile-Security-Framework-MobSF
+
+MLIAEdu
+
+Plateforme d'apprentissage nouvelle génération, combinant expertise académique et intelligence artificielle pour forger les talents de demain.
+
+"L'éducation est la clé pour démocratiser l'IA et le génie logiciel et créer un avenir meilleur pour tous."
+Navigation
+
+    Tous les cours
+    Connexion
+    Inscription
+
+Contact
+Mme Oumaima AIT SAIDIngénieur Manager
+mliadedu@toubkalit.com
+© 2026 MLIAEdu Platform. Tous droits réservés.
+Conditions d'utilisation
+Confidentialité
+CGU
+MLIAEdu
+Tableau de bord
+Mes Cours
+Certifications
+Recommandations
+Ait Oihmane Lahsen
+Retour au cours
+LAB 7 : Analyse Dynamique Mobile avec MobSF
+
+Cours : Sécurité des applications mobiles
+Étapes
+Étape 3 : Lancement de l’émulateur avec le script MobSF (rooté & prêt pour l’analyse)
+
+    Dans le dossier MobSF :
+        Linux / Mac : ./scripts/start_avd.sh
+        Windows : scripts\start_avd.ps1
+    Le script liste vos AVD → choisissez MobSF_DIVA_API_30 (ou le nom exact).
+    Lancez :
+    Bash
+
+    ./scripts/start_avd.sh MobSF_DIVA_API_30
+
+    L’émulateur démarre (peut prendre 30-60 secondes la première fois).
+
+Vérification :
+
+    Ouvrez un nouveau terminal et tapez : adb devices
+    Vous devez voir : emulator-5554 device (ou emulator-5555).
+    Notez cet identifiant (ex. : emulator-5554) → il sera utilisé plus tard.
+
+L’émulateur est maintenant rooté et configuré pour MobSF (le script gère tout).
+MLIAEdu
+
+Plateforme d'apprentissage nouvelle génération, combinant expertise académique et intelligence artificielle pour forger les talents de demain.
+
+"L'éducation est la clé pour démocratiser l'IA et le génie logiciel et créer un avenir meilleur pour tous."
+Navigation
+
+    Tous les cours
+    Connexion
+    Inscription
+
+Contact
+Mme Oumaima AIT SAIDIngénieur Manager
+mliadedu@toubkalit.com
+© 2026 MLIAEdu Platform. Tous droits réservés.
+Conditions d'utilisation
+Confidentialité
+CGU
+MLIAEdu
+Tableau de bord
+Mes Cours
+Certifications
+Recommandations
+Ait Oihmane Lahsen
+Retour au cours
+LAB 7 : Analyse Dynamique Mobile avec MobSF
+
+Cours : Sécurité des applications mobiles
+Étapes
+Étape 4 : Installation et lancement de MobSF via Docker (5 min)
+Dans un nouveau terminal (émulateur toujours en marche) :
+Bash
+
+docker pull opensecurity/mobile-security-framework-mobsf:latest
+
+Puis lancez MobSF avec la variable d’environnement correcte :
+Bash
+
+docker run -it --rm \
+  -p 8000:8000 \
+  -e MOBSF_ANALYZER_IDENTIFIER=emulator-5554 \
+  opensecurity/mobile-security-framework-mobsf:latest
+
+(Remplacez emulator-5554 par votre identifiant exact !)
+MobSF démarre. Ouvrez votre navigateur : http://127.0.0.1:8000
+Login / Mot de passe par défaut : mobsf / mobsf
+Uploaded ImageImportant : L’émulateur doit être lancé AVANT MobSF, sinon l’analyse dynamique échoue.
+MLIAEdu
+
+Plateforme d'apprentissage nouvelle génération, combinant expertise académique et intelligence artificielle pour forger les talents de demain.
+
+"L'éducation est la clé pour démocratiser l'IA et le génie logiciel et créer un avenir meilleur pour tous."
+Navigation
+
+    Tous les cours
+    Connexion
+    Inscription
+
+Contact
+Mme Oumaima AIT SAIDIngénieur Manager
+mliadedu@toubkalit.com
+© 2026 MLIAEdu Platform. Tous droits réservés.
+Conditions d'utilisation
+Confidentialité
+CGU
+MLIAEdu
+Tableau de bord
+Mes Cours
+Certifications
+Recommandations
+Ait Oihmane Lahsen
+Retour au cours
+LAB 7 : Analyse Dynamique Mobile avec MobSF
+
+Cours : Sécurité des applications mobiles
+Étapes
+Étape 5 : Téléchargement de l’APK DIVA (Damn Insecure and Vulnerable App)
+DIVA est l’application de test parfaite : 13 challenges vulnérables (stockage insecure, intents, hard-coded credentials, native code, etc.).
+
+    Allez sur : http://www.payatu.com/damn-insecure-and-vulnerable-app/
+    Téléchargez la version debug APK (ou le fichier diva-beta.tar.gz et extrayez l’APK).
+    Alternative directe : https://github.com/payatu/diva-android (source) mais l’APK précompilé est plus rapide.
+
+Gardez le fichier diva.apk (ou DIVA-debug.apk) sur votre bureau.
+MLIAEdu
+
+Plateforme d'apprentissage nouvelle génération, combinant expertise académique et intelligence artificielle pour forger les talents de demain.
+
+"L'éducation est la clé pour démocratiser l'IA et le génie logiciel et créer un avenir meilleur pour tous."
+Navigation
+
+    Tous les cours
+    Connexion
+    Inscription
+
+Contact
+Mme Oumaima AIT SAIDIngénieur Manager
+mliadedu@toubkalit.com
+© 2026 MLIAEdu Platform. Tous droits réservés.
+Conditions d'utilisation
+Confidentialité
+CGU
+MLIAEdu
+Tableau de bord
+Mes Cours
+Certifications
+Recommandations
+Ait Oihmane Lahsen
+Retour au cours
+LAB 7 : Analyse Dynamique Mobile avec MobSF
+
+Cours : Sécurité des applications mobiles
+Étapes
+Étape 6 : Analyse Statique + Dynamique de DIVA (le cœur du lab)
+
+    Dans MobSF → Upload & Analyze → choisissez votre diva.apk.
+    Attendez la fin de l’analyse statique (manifest, permissions, code source, etc.).
+    Dans le rapport de scan → cliquez sur le gros bouton Dynamic Analysis (ou « Start Dynamic Analyzer »).
+
+Uploaded ImageUploaded ImageMobSF va :
+
+    Installer automatiquement DIVA sur l’émulateur.
+    Lancer Frida Server.
+    Configurer le proxy HTTPS global.
+    Ouvrir l’interface Dynamic Analyzer.
+
+    Dans l’émulateur :
+        Lancez l’application DIVA.
+        Explorez les 13 challenges (Insecure Logging, Hardcoded, Insecure Storage, etc.).
+    Dans MobSF Dynamic Analyzer :
+        Runtime Logs → voyez tous les logs de l’application en live.
+        Network Traffic → tout le trafic HTTP/HTTPS intercepté (même le SSL !).
+        Frida → cliquez « Spawn & Inject » → vous pouvez hooker des méthodes (ex. : Java.perform pour intercepter des appels).
+        File Monitor, Intent Monitor, etc.
+
+Exemple concret avec DIVA :
+
+    Allez dans le challenge « Insecure Data Storage » → MobSF capture les fichiers écrits en clair.
+    Challenge « Access Control » → voyez les intents non sécurisés.
+    Tout est enregistré et exportable en rapport PDF/JSON.
+
+Uploaded Image
+MLIAEdu
+
+Plateforme d'apprentissage nouvelle génération, combinant expertise académique et intelligence artificielle pour forger les talents de demain.
+
+"L'éducation est la clé pour démocratiser l'IA et le génie logiciel et créer un avenir meilleur pour tous."
+Navigation
+
+    Tous les cours
+    Connexion
+    Inscription
+
+Contact
+Mme Oumaima AIT SAIDIngénieur Manager
+mliadedu@toubkalit.com
+© 2026 MLIAEdu Platform. Tous droits réservés.
+Conditions d'utilisation
+Confidentialité
+CGU
+MLIAEdu
+Tableau de bord
+Mes Cours
+Certifications
+Recommandations
+Ait Oihmane Lahsen
+Retour au cours
+LAB 7 : Analyse Dynamique Mobile avec MobSF
+
+Cours : Sécurité des applications mobiles
+Étapes
+Étape 7 : Tests avancés & exploration (à faire vous-même)
+
+    Modifiez les inputs dans DIVA et observez les changements en live dans MobSF.
+    Utilisez l’onglet Frida pour injecter du code et bypasser des checks.
+    Exportez le rapport dynamique complet.
+    Arrêtez/re-démarrez l’analyse pour tester plusieurs fois.
+
+
+
+Menu 
+Uploaded Image<col><col><col>
+Menu
+	Rôle principal
+	Utilité en analyse dynamique
+Stop Screen
+	Arrêter l’affichage de l’écran distant
+	Permet d’interrompre le mirroring de l’écran de l’émulateur ou de l’appareil dans MobSF
+Remove Root CA
+	Supprimer le certificat racine installé par MobSF
+	Sert à nettoyer l’environnement après interception HTTPS et à revenir à un état plus sûr
+Unset HTTP(S) Proxy
+	Désactiver le proxy HTTP/HTTPS
+	Arrête la redirection du trafic réseau de l’application vers le proxy MobSF
+TLS/SSL Security Tester
+	Tester la sécurité TLS/SSL
+	Vérifie la validation des certificats, l’acceptation de certificats non fiables et certaines faiblesses réseau
+Exported Activity Tester
+	Tester les activities exportées
+	Permet de voir si des activités exposées peuvent être lancées abusivement depuis l’extérieur
+Activity Tester
+	Tester les activités de l’application
+	Aide à lancer et observer les écrans internes pour comprendre le comportement de l’application
+Get Dependencies
+	Récupérer des informations sur les dépendances
+	Aide à identifier bibliothèques, composants et éléments utiles à l’analyse
+Take a Screenshot
+	Capturer l’écran courant
+	Permet de documenter une étape de test, un bug ou une vulnérabilité visible
+Logcat Stream
+	Afficher les logs Android en temps réel
+	Très utile pour détecter erreurs, exceptions, traces de debug et fuites d’informations
+Generate Report
+	Générer le rapport final
+	Regroupe les résultats, observations et éléments collectés pendant l’analyse dynamique
+MLIAEdu
+
+Plateforme d'apprentissage nouvelle génération, combinant expertise académique et intelligence artificielle pour forger les talents de demain.
+
+"L'éducation est la clé pour démocratiser l'IA et le génie logiciel et créer un avenir meilleur pour tous."
+Navigation
+
+    Tous les cours
+    Connexion
+    Inscription
+
+Contact
+Mme Oumaima AIT SAIDIngénieur Manager
+mliadedu@toubkalit.com
+© 2026 MLIAEdu Platform. Tous droits réservés.
+Conditions d'utilisation
+Confidentialité
+CGU
+MLIAEdu
+Tableau de bord
+Mes Cours
+Certifications
+Recommandations
+Ait Oihmane Lahsen
+Retour au cours
+LAB 7 : Analyse Dynamique Mobile avec MobSF
+
+Cours : Sécurité des applications mobiles
+Étapes
+Dépannage rapide (si quelque chose coince)
+
+    « Dynamic Analysis Failed » → Vérifiez que l’émulateur est lancé avant MobSF + adb devices montre bien le device.
+    Problème de connexion Docker → Ajoutez --net=host à la commande docker (surtout sur Linux).
+    Émulateur lent → Utilisez une API 29 x86_64.
+    Sur Windows → utilisez start_avd.ps1 et le même identifiant.
+
+
+MLIAEdu
+
+Plateforme d'apprentissage nouvelle génération, combinant expertise académique et intelligence artificielle pour forger les talents de demain.
+
+"L'éducation est la clé pour démocratiser l'IA et le génie logiciel et créer un avenir meilleur pour tous."
+Navigation
+
+    Tous les cours
+    Connexion
+    Inscription
+
+Contact
+Mme Oumaima AIT SAIDIngénieur Manager
+mliadedu@toubkalit.com
+© 2026 MLIAEdu Platform. Tous droits réservés.
+Conditions d'utilisation
+Confidentialité
+CGU
+MLIAEdu
+Tableau de bord
+Mes Cours
+Certifications
+Recommandations
+Ait Oihmane Lahsen
+Retour au cours
+LAB 7 : Analyse Dynamique Mobile avec MobSF
+
+Cours : Sécurité des applications mobiles
+Étapes
+Conclusion & prochaine étape
+Félicitations ! Vous venez de réaliser une analyse dynamique complète comme dans les labs Google ou OWASP MASTG.
+MobSF combine statique + dynamique + Frida en un seul outil puissant.
+Vous pouvez maintenant répéter le lab avec n’importe quelle APK (InsecureBankv2, AndroGoat, vos propres apps, etc.).
+Ressources officielles :
+
+    Doc MobSF Dynamic : https://github.com/MobSF/docs
+    DIVA challenges : GitHub payatu/diva-android
+
+Voir les questions
+MLIAEdu
+
+Plateforme d'apprentissage nouvelle génération, combinant expertise académique et intelligence artificielle pour forger les talents de demain.
+
+"L'éducation est la clé pour démocratiser l'IA et le génie logiciel et créer un avenir meilleur pour tous."
+Navigation
+
+    Tous les cours
+    Connexion
+    Inscription
+
+Contact
+Mme Oumaima AIT SAIDIngénieur Manager
+mliadedu@toubkalit.com
+© 2026 MLIAEdu Platform. Tous droits réservés.
+Conditions d'utilisation
+Confidentialité
+CGU

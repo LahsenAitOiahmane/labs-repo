@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GeoTracker</string>
+    <string name="app_subtitle">Localisation GPS en temps réel</string>
+
+    <!-- Headers -->
+    <string name="header_coordinates">Coordonnées GPS</string>
+    <string name="header_device_info">Informations Appareil</string>
+    <string name="header_server">Connexion Serveur</string>
+    <string name="header_status">Statut</string>
+
+    <!-- Labels -->
+    <string name="label_latitude">Latitude</string>
+    <string name="label_longitude">Longitude</string>
+    <string name="label_timestamp">Horodatage</string>
+    <string name="label_device_id">Identifiant Appareil</string>
+    <string name="label_accuracy">Précision</string>
+    <string name="label_altitude">Altitude</string>
+    <string name="label_server_url">URL Serveur</string>
+    <string name="label_last_sent">Dernier envoi</string>
+    <string name="label_records_sent">Positions envoyées</string>
+
+    <!-- Placeholders -->
+    <string name="placeholder_waiting">En attente de signal…</string>
+    <string name="placeholder_no_data">—</string>
+    <string name="placeholder_connecting">Connexion…</string>
+    <string name="placeholder_meters">%1$s m</string>
+    <string name="placeholder_degrees">%1$.6f°</string>
+
+    <!-- Buttons -->
+    <string name="btn_start_tracking">Démarrer le suivi</string>
+    <string name="btn_stop_tracking">Arrêter le suivi</string>
+    <string name="btn_send_now">Envoyer maintenant</string>
+    <string name="btn_clear_log">Effacer le journal</string>
+
+    <!-- Status messages -->
+    <string name="status_gps_ready">GPS prêt</string>
+    <string name="status_gps_searching">Recherche signal GPS…</string>
+    <string name="status_gps_acquired">Signal GPS acquis</string>
+    <string name="status_gps_disabled">GPS désactivé</string>
+    <string name="status_sending">Envoi en cours…</string>
+    <string name="status_send_success">Position enregistrée avec succès</string>
+    <string name="status_send_error">Erreur lors de l\'envoi</string>
+    <string name="status_tracking_active">Suivi actif</string>
+    <string name="status_tracking_stopped">Suivi arrêté</string>
+    <string name="status_permission_denied">Permission refusée</string>
+    <string name="status_network_error">Erreur réseau : vérifiez la connexion</string>
+
+    <!-- Permission rationale -->
+    <string name="permission_location_title">Autorisation de localisation</string>
+    <string name="permission_location_msg">GeoTracker nécessite l\'accès à votre position GPS pour fonctionner correctement.</string>
+    <string name="permission_phone_title">Autorisation téléphone</string>
+    <string name="permission_phone_msg">GeoTracker lit l\'identifiant de l\'appareil pour associer vos positions à votre terminal.</string>
+    <string name="permission_btn_grant">Autoriser</string>
+    <string name="permission_btn_deny">Refuser</string>
+
+    <!-- Log entries -->
+    <string name="log_app_started">Application démarrée</string>
+    <string name="log_gps_fix">Localisation obtenue</string>
+    <string name="log_data_sent">Données envoyées au serveur</string>
+    <string name="log_error_prefix">Erreur : %1$s</string>
+
+    <!-- Content descriptions (accessibility) -->
+    <string name="cd_gps_icon">Icône GPS</string>
+    <string name="cd_signal_icon">Indicateur de signal</string>
+    <string name="cd_server_icon">Icône serveur</string>
+    <string name="cd_send_icon">Icône envoi</string>
+</resources>

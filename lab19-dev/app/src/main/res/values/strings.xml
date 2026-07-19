@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NoteKeeper</string>
+    <string name="hint_note_title">Titre de la note…</string>
+    <string name="hint_note_body">Écris tes idées ici…</string>
+    <string name="btn_save_note">Enregistrer</string>
+    <string name="btn_cancel">Annuler</string>
+    <string name="btn_delete_all">Tout supprimer</string>
+    <string name="msg_note_saved">Note enregistrée ✓</string>
+    <string name="msg_note_deleted">Note supprimée</string>
+    <string name="msg_all_deleted">Toutes les notes ont été supprimées</string>
+    <string name="msg_fields_empty">Le titre et la description sont obligatoires</string>
+    <string name="empty_state_title">Aucune note pour l\'instant</string>
+    <string name="empty_state_subtitle">Appuie sur + pour créer ta première note</string>
+    <string name="dialog_delete_title">Supprimer cette note ?</string>
+    <string name="dialog_delete_message">Cette action est irréversible.</string>
+    <string name="dialog_confirm">Supprimer</string>
+    <string name="dialog_cancel">Annuler</string>
+    <string name="content_description_fab">Ajouter une note</string>
+    <string name="label_note_title">Titre</string>
+    <string name="label_note_body">Contenu</string>
+    <string name="tag_note">Note</string>
+</resources>

@@ -1,0 +1,10 @@
+CREATE DATABASE IF NOT EXISTS `map_project` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `map_project`;
+
+CREATE TABLE IF NOT EXISTS `positions` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `latitude` DOUBLE NOT NULL,
+  `longitude` DOUBLE NOT NULL,
+  `date` DATETIME NOT NULL,
+  `imei` VARCHAR(64) NOT NULL
+) ENGINE=InnoDB;

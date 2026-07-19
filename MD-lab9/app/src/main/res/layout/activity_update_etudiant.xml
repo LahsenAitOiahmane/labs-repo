@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".UpdateEtudiant">
+
+    <TextView android:text="Nom :" style="@style/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <EditText android:id="@+id/nom" style="@style/input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName" />
+
+    <TextView android:text="Prénom :" style="@style/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <EditText android:id="@+id/prenom" style="@style/input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName" />
+
+    <TextView android:text="Ville :" style="@style/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <Spinner android:id="@+id/ville" android:entries="@array/villes" style="@style/input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView android:text="Sexe :" style="@style/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <RadioGroup
+        android:id="@+id/sexeGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton android:id="@+id/m" android:text="Homme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <RadioButton android:id="@+id/f" android:text="Femme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RadioGroup>
+
+    <Button android:id="@+id/update" android:text="Modifier"
+        android:layout_width="match_parent" android:layout_height="wrap_content" />
+</LinearLayout>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Modern color palette -->
+    <color name="primaryColor">#3B82F6</color>
+    <color name="primaryLightColor">#60A5FA</color>
+    <color name="primaryDarkColor">#2563EB</color>
+    
+    <color name="secondaryColor">#10B981</color>
+    <color name="secondaryLightColor">#34D399</color>
+    <color name="secondaryDarkColor">#059669</color>
+    
+    <!-- Light theme colors -->
+    <color name="primaryTextColor">#111827</color>
+    <color name="secondaryTextColor">#4B5563</color>
+    <color name="backgroundColor">#F3F4F6</color>
+    <color name="cardColor">#FFFFFF</color>
+
+    <!-- Dark theme colors -->
+    <color name="primaryTextColorDark">#F9FAFB</color>
+    <color name="secondaryTextColorDark">#D1D5DB</color>
+    <color name="backgroundColorDark">#111827</color>
+    <color name="cardColorDark">#1F2937</color>
+
+    <!-- Kept for compatibility -->
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

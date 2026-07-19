@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Système Asynchrone</string>
+    <string name="status_label">État du système</string>
+    <string name="status_waiting">En attente d’action…</string>
+    <string name="status_loading_thread">Traitement Thread en cours…</string>
+    <string name="status_finished_thread">Traitement Thread terminé</string>
+    <string name="status_loading_async">Calcul asynchrone démarré…</string>
+    <string name="status_result_async">Résultat du moteur : %1$d</string>
+
+    <string name="btn_thread_text">Chargement Image (Thread)</string>
+    <string name="btn_async_text">Calcul Intensif (AsyncTask)</string>
+    <string name="btn_toast_text">Vérifier Réactivité (Toast)</string>
+    <string name="toast_message">L’interface reste fluide !</string>
+    <string name="img_description">Aperçu du résultat</string>
+</resources>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary palette — deep cosmic blue/teal -->
+    <color name="colorPrimary">#0D7EA8</color>
+    <color name="colorPrimaryDark">#085E80</color>
+    <color name="colorPrimaryVariant">#1AA3D4</color>
+    <color name="colorSecondary">#00C9A7</color>
+    <color name="colorSecondaryVariant">#00A389</color>
+    <color name="colorAccent">#F4A261</color>
+
+    <!-- Backgrounds -->
+    <color name="colorBackground">#0A1628</color>
+    <color name="colorSurface">#0F2040</color>
+    <color name="colorSurfaceVariant">#152A50</color>
+    <color name="colorCardBackground">#112238</color>
+
+    <!-- Gradient colours -->
+    <color name="gradientStart">#0A1628</color>
+    <color name="gradientEnd">#0D2B4A</color>
+
+    <!-- Text -->
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorOnBackground">#E8F4F8</color>
+    <color name="colorOnSurface">#D0E8F5</color>
+    <color name="colorTextSecondary">#7DB5CC</color>
+    <color name="colorTextHint">#4A7A8F</color>
+
+    <!-- Status colours -->
+    <color name="colorSuccess">#00C9A7</color>
+    <color name="colorError">#FF6B6B</color>
+    <color name="colorWarning">#FFB347</color>
+    <color name="colorInfo">#1AA3D4</color>
+
+    <!-- GPS pulse animation -->
+    <color name="colorPulse">#1AA3D480</color>
+
+    <!-- Divider / stroke -->
+    <color name="colorDivider">#1E3A5F</color>
+    <color name="colorStroke">#1D4E73</color>
+
+    <!-- Legacy required names -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

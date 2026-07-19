@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Night theme — same deep dark palette -->
+    <style name="Base.Theme.GeoTracker" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorError">@color/colorError</item>
+        <item name="android:statusBarColor">@color/colorBackground</item>
+        <item name="android:navigationBarColor">@color/colorBackground</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
+    </style>
+    <style name="Theme.GeoTracker" parent="Base.Theme.GeoTracker" />
+    <style name="Base.Theme.Lab11" parent="Base.Theme.GeoTracker" />
+    <style name="Theme.Lab11" parent="Theme.GeoTracker" />
+</resources>

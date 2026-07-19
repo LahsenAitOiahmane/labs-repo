@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Système de Broadcast Avancé</string>
+    <string name="title_dashboard">Tableau de Bord - Lab 17</string>
+    <string name="status_observer_active">🟢 Observateur Avion : EN LIGNE</string>
+    <string name="status_observer_inactive">🔴 Observateur Avion : HORS LIGNE</string>
+    <string name="btn_enable_observer">Activer l\'Observateur</string>
+    <string name="btn_disable_observer">Désactiver l\'Observateur</string>
+    <string name="btn_dispatch_internal">Générer Message Interne</string>
+</resources>

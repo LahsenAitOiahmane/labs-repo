@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SmartMapTracker</string>
+    <string name="gps_disabled_title">GPS Désactivé</string>
+    <string name="gps_disabled_message">Votre GPS est désactivé. Veuillez l\'activer pour utiliser la localisation sur la carte.</string>
+    <string name="enable_gps">Activer</string>
+    <string name="cancel">Annuler</string>
+    <string name="location_permission_required">L\'autorisation de localisation est requise pour cette application.</string>
+</resources>

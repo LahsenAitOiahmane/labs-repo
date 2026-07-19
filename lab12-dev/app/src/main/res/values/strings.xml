@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">GeoTracker Pro</string>
+    <string name="provider_enabled">Le service %s est activé</string>
+    <string name="provider_disabled">Le service %s est désactivé</string>
+    <string name="provider_new_status">Le statut de %1$s est maintenant %2$s</string>
+    <string name="new_location">Nouvelle localisation:\nLat: %1$s\nLon: %2$s\nPrécision: %3$s m</string>
+    
+    <string name="lbl_latitude">Latitude Actuelle</string>
+    <string name="lbl_longitude">Longitude Actuelle</string>
+    <string name="val_waiting">En attente du signal GPS...</string>
+    <string name="btn_show_map">Ouvrir la Carte</string>
+    <string name="title_dashboard">Tableau de Bord GPS</string>
+</resources>

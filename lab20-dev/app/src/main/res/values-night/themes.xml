@@ -1,0 +1,7 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Thème sombre PhoneVault -->
+    <style name="Base.Theme.PhoneVault" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/pv_primary_light</item>
+        <item name="android:windowBackground">#0F0A2E</item>
+    </style>
+</resources>

@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_home"
+        android:icon="@drawable/ic_home"
+        android:title="Dashboard" />
+    <item
+        android:id="@+id/menu_analytics"
+        android:icon="@drawable/ic_dashboard"
+        android:title="Analytics" />
+    <item
+        android:id="@+id/menu_tasks"
+        android:icon="@drawable/ic_list"
+        android:title="Task Manager" />
+</menu>

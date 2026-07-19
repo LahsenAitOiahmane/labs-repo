@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="theme_bg">#FDFDFD</color>
+    <color name="primary_accent_color">#5E5CE6</color>
+    <color name="secondary_accent_color">#00C7BE</color>
+    <color name="text_header">#1C1C1E</color>
+    <color name="text_sub_header">#3A3A3C</color>
+    <color name="card_fill">#FFFFFF</color>
+    <color name="progress_track">#E5E5EA</color>
+    <color name="progress_indicator">#34C759</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+</resources>

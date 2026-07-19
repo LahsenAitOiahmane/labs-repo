@@ -1,0 +1,43 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Thème de base PhoneVault -->
+    <style name="Base.Theme.PhoneVault" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/pv_primary</item>
+        <item name="colorPrimaryDark">@color/pv_primary_dark</item>
+        <item name="colorAccent">@color/pv_accent</item>
+        <item name="android:windowBackground">@color/pv_background</item>
+        <item name="android:statusBarColor">@color/pv_primary_dark</item>
+    </style>
+
+    <style name="Theme.PhoneVault" parent="Base.Theme.PhoneVault" />
+
+    <!-- Style personnalisé pour les boutons principaux -->
+    <style name="Widget.PhoneVault.Button.Primary" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/pv_primary</item>
+        <item name="android:textColor">@color/pv_text_on_primary</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.05</item>
+    </style>
+
+    <!-- Style pour les boutons d'action secondaire (teal) -->
+    <style name="Widget.PhoneVault.Button.Accent" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/pv_accent</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Style pour les champs de texte -->
+    <style name="Widget.PhoneVault.TextInput" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/pv_primary</item>
+        <item name="hintTextColor">@color/pv_text_secondary</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+    </style>
+</resources>

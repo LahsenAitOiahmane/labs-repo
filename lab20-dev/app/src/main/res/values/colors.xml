@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Palette principale PhoneVault -->
+    <color name="pv_primary">#3D2C8D</color>         <!-- indigo profond -->
+    <color name="pv_primary_dark">#2A1E6B</color>     <!-- indigo foncé (toolbar) -->
+    <color name="pv_primary_light">#5C45B8</color>    <!-- indigo clair (ripple) -->
+    <color name="pv_accent">#00BFA5</color>           <!-- teal/menthe accentué -->
+    <color name="pv_accent_dark">#007C6B</color>      <!-- teal foncé -->
+
+    <!-- Surfaces & arrière-plans -->
+    <color name="pv_background">#F3F0FE</color>       <!-- lavande très clair -->
+    <color name="pv_surface">#FFFFFF</color>
+    <color name="pv_card_bg">#FFFFFF</color>
+    <color name="pv_divider">#E0DBF5</color>
+
+    <!-- Textes -->
+    <color name="pv_text_primary">#1A1240</color>
+    <color name="pv_text_secondary">#6B5FA8</color>
+    <color name="pv_text_hint">#A89DC8</color>
+    <color name="pv_text_on_primary">#FFFFFF</color>
+
+    <!-- États -->
+    <color name="pv_success">#00C896</color>
+    <color name="pv_error">#E53935</color>
+    <color name="pv_warning">#F59E0B</color>
+
+    <!-- Avatar couleurs (cycle pour les contacts) -->
+    <color name="pv_avatar_1">#3D2C8D</color>
+    <color name="pv_avatar_2">#00BFA5</color>
+    <color name="pv_avatar_3">#E040FB</color>
+    <color name="pv_avatar_4">#F4511E</color>
+    <color name="pv_avatar_5">#1E88E5</color>
+
+    <!-- Utilitaires -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

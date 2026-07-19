@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">NexusCore</string>
+    <string name="navigation_drawer_open">Open navigation</string>
+    <string name="navigation_drawer_close">Close navigation</string>
+
+    <string name="menu_dashboard">Dashboard</string>
+    <string name="menu_analytics">Analytics</string>
+    <string name="menu_tasks">Task Manager</string>
+
+    <string name="header_title">Nexus Core</string>
+    <string name="header_subtitle">admin@nexus-systems.io</string>
+
+    <string name="welcome_message">Welcome Back</string>
+    <string name="welcome_sub">Explore your dashboard</string>
+    <string name="analytics_title">System Analytics</string>
+</resources>

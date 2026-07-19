@@ -1,0 +1,5 @@
+sql/secrets/
+ftp/certs/*.key
+*.env
+.env
+secrets/

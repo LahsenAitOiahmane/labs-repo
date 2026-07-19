@@ -1,0 +1,1495 @@
+''''
+Étapes
+Objectif général
+Ce lab a pour objectif de développer progressivement une application Android permettant d’exploiter les capteurs embarqués d’un smartphone. L’application doit afficher les capteurs disponibles, lire leurs caractéristiques techniques, visualiser les mesures sous forme de graphes et exploiter les capteurs de mouvement pour proposer une reconnaissance simple d’activité.
+
+Compétences visées
+À la fin du lab, l’étudiant doit être capable de :
+
+    Comprendre le rôle de SensorManager dans Android.
+    Lister les capteurs disponibles dans un dispositif.
+    Lire les propriétés techniques d’un capteur.
+    Exploiter SensorEventListener pour recevoir des mesures en temps réel.
+    Afficher l’évolution d’un capteur sous forme de graphe.
+    Utiliser l’accéléromètre, le gyroscope, le magnétomètre, le capteur de proximité et le compteur de pas.
+    Mettre en place une logique simple de reconnaissa
+
+
+Étapes
+Partie 1 — Préparation du projet
+Objectif pédagogique
+Cette partie prépare l’environnement de travail et organise le projet afin que chaque capteur soit traité dans un fragment séparé. Cette organisation rend le code plus lisible, plus maintenable et plus proche d’une application professionnelle.
+Étape 1 — Ouvrir le projet existant
+Ouvrir le code source de l’application Sensor avec Android Studio. (Téléchargeur depuis ici)
+Uploaded ImageVérifier que le projet contient déjà un menu avec les entrées suivantes :
+
+Sensors
+Température
+Humidité
+Proximité
+Magnetic
+
+Le TP initial montre une application existante avec un menu latéral contenant ces entrées.
+Étape 2 — Organiser les fichiers
+Créer les packages suivants :
+
+fragments
+utils
+views
+
+La structure recommandée devient :
+
+app/src/main/java/nom/package/application/
+│
+├── MainActivity.java
+├── fragments/
+│   ├── SensorsListFragment.java
+│   ├── SensorGraphFragment.java
+│   ├── MotionSensorFragment.java
+│   ├── StepCounterFragment.java
+│   ├── CompassFragment.java
+│   └── ActivityRecognitionFragment.java
+│
+├── utils/
+│   └── SensorFormatter.java
+│
+└── views/
+    └── LineChartView.java
+
+Explication pédagogique
+
+    Le package fragments contient les écrans de l’application.
+    Le package utils contient les classes d’aide.
+    Le package views contient les composants graphiques personnalisés.
+    Cette séparation évite de mettre tout le code dans MainActivity, ce qui rend l’application difficile à maintenir.
+
+
+Étapes
+Partie 2 — Affichage des capteurs disponibles
+Objectif pédagogique
+Cette partie permet d’afficher la liste complète des capteurs disponibles sur le téléphone ou l’émulateur. Pour chaque capteur, les informations techniques demandées dans le TP doivent être ajoutées :
+
+Résolution
+Besoins en énergie
+Maximum Range
+Int Type
+Vitesse maximale d’acquisition
+
+Uploaded Image
+Étape 1 — Créer la classe SensorFormatter
+Créer le fichier :
+
+utils/SensorFormatter.java
+
+package com.example.sensors.utils;
+
+import android.hardware.Sensor;
+
+public class SensorFormatter {
+
+    public static String format(Sensor sensor) {
+        return "Id : " + sensor.getId() + "\n"
+                + "Name : " + sensor.getName() + "\n"
+                + "Vendor : " + sensor.getVendor() + "\n"
+                + "Version : " + sensor.getVersion() + "\n"
+                + "Type : " + sensor.getStringType() + "\n"
+                + "Int Type : " + sensor.getType() + "\n"
+                + "Resolution : " + sensor.getResolution() + "\n"
+                + "Power : " + sensor.getPower() + " mA\n"
+                + "Maximum Range : " + sensor.getMaximumRange() + "\n"
+                + "Min Delay : " + sensor.getMinDelay() + " µs\n";
+    }
+}
+
+Explication du code
+La classe SensorFormatter transforme un objet Sensor en texte lisible.
+
+    getName() retourne le nom du capteur.
+    getVendor() retourne le fabricant.
+    getVersion() retourne la version du capteur.
+    getStringType() retourne le type textuel du capteur.
+    getType() retourne le type entier du capteur. C’est l’information demandée dans le TP sous le nom Int Type.
+    getResolution() retourne la résolution du capteur.
+    getPower() retourne la consommation énergétique du capteur en milliampères.
+    getMaximumRange() retourne la valeur maximale que le capteur peut mesurer.
+    getMinDelay() retourne le délai minimal entre deux acquisitions. Cette valeur permet d’estimer la vitesse maximale d’acquisition.
+
+
+
+Étape 2 — Créer le fragment SensorsListFragment
+
+package com.example.sensors.fragments;
+
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.LayoutInflater;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.example.sensors.utils.SensorFormatter;
+
+import java.util.List;
+
+public class SensorsListFragment extends Fragment {
+
+    private SensorManager sensorManager;
+    private LinearLayout container;
+
+    @Nullable
+    @Override
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup parent,
+            @Nullable Bundle savedInstanceState) {
+
+        ScrollView scrollView = new ScrollView(requireContext());
+
+        container = new LinearLayout(requireContext());
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setPadding(24, 24, 24, 24);
+
+        scrollView.addView(container);
+
+        sensorManager = (SensorManager)
+                requireActivity().getSystemService(Context.SENSOR_SERVICE);
+
+        displaySensors();
+
+        return scrollView;
+    }
+
+    private void displaySensors() {
+        List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_ALL);
+
+        for (Sensor sensor : sensors) {
+            TextView textView = new TextView(requireContext());
+            textView.setText(SensorFormatter.format(sensor));
+            textView.setTextSize(14);
+            textView.setPadding(16, 16, 16, 16);
+
+            container.addView(textView);
+
+            View separator = new View(requireContext());
+            separator.setLayoutParams(
+                    new LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            2));
+
+            separator.setBackgroundColor(0xFFE0E0E0);
+            container.addView(separator);
+        }
+    }
+}
+
+Explication du code
+
+    SensorManager est le service Android qui permet d’accéder aux capteurs.
+    getSensorList(Sensor.TYPE_ALL) récupère tous les capteurs disponibles.
+    Chaque capteur est affiché dans un TextView.
+    Le ScrollView permet de faire défiler la liste lorsque le téléphone contient beaucoup de capteurs.
+    Le séparateur gris améliore la lisibilité de l’affichage.
+
+
+Étapes
+Partie 3 — Création d’un graphe simple pour les mesures
+Objectif pédagogique
+Le TP demande d’afficher l’évolution de la température, de l’humidité, de la proximité et du champ magnétique sous forme de graphe. Pour simplifier le lab, un composant graphique personnalisé est créé sans utiliser de bibliothèque externe.
+Étape 1 — Créer la vue LineChartView
+Créer le fichier :
+
+views/LineChartView.java
+
+package com.example.sensors.views;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.view.View;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class LineChartView extends View {
+
+    private final List<Float> values = new ArrayList<>();
+    private final int maxPoints = 80;
+
+    private final Paint axisPaint = new Paint();
+    private final Paint linePaint = new Paint();
+    private final Paint textPaint = new Paint();
+
+    public LineChartView(Context context) {
+        super(context);
+
+        axisPaint.setColor(Color.LTGRAY);
+        axisPaint.setStrokeWidth(3);
+
+        linePaint.setColor(Color.rgb(33, 150, 243));
+        linePaint.setStrokeWidth(5);
+        linePaint.setStyle(Paint.Style.STROKE);
+
+        textPaint.setColor(Color.DKGRAY);
+        textPaint.setTextSize(30);
+    }
+
+    public void addValue(float value) {
+        if (values.size() >= maxPoints) {
+            values.remove(0);
+        }
+
+        values.add(value);
+        invalidate();
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+        int width = getWidth();
+        int height = getHeight();
+
+        canvas.drawLine(40, height - 40, width - 20, height - 40, axisPaint);
+        canvas.drawLine(40, 20, 40, height - 40, axisPaint);
+
+        if (values.size() < 2) {
+            canvas.drawText("En attente des données...", 60, height / 2, textPaint);
+            return;
+        }
+
+        float min = Float.MAX_VALUE;
+        float max = -Float.MAX_VALUE;
+
+        for (float value : values) {
+            min = Math.min(min, value);
+            max = Math.max(max, value);
+        }
+
+        if (max == min) {
+            max = min + 1;
+        }
+
+        Path path = new Path();
+
+        for (int i = 0; i < values.size(); i++) {
+            float x = 40 + i * ((width - 80f) / (maxPoints - 1));
+            float normalizedValue = (values.get(i) - min) / (max - min);
+            float y = height - 40 - normalizedValue * (height - 80);
+
+            if (i == 0) {
+                path.moveTo(x, y);
+            } else {
+                path.lineTo(x, y);
+            }
+        }
+
+        canvas.drawPath(path, linePaint);
+        canvas.drawText("Min : " + min + " | Max : " + max, 60, 40, textPaint);
+    }
+}
+
+Explication du code
+
+    values garde les dernières valeurs reçues.
+    maxPoints limite le nombre de points affichés afin d’éviter une surcharge graphique.
+    addValue() ajoute une mesure et demande à Android de redessiner la vue avec invalidate().
+    onDraw() est la méthode responsable du dessin.
+    Canvas permet de dessiner les axes et la courbe.
+    Path relie les points entre eux pour former une courbe continue.
+
+Étapes
+Partie 4 — Température, humidité, proximité et champ magnétique
+Objectif pédagogique
+Cette partie crée un fragment générique capable de lire un capteur simple et d’afficher ses valeurs dans un graphe.
+Le même fragment sera utilisé pour :
+
+Température
+Humidité
+Proximité
+Champ magnétique
+
+Étape 1 — Créer le fragment SensorGraphFragment
+
+package com.example.sensors.fragments;
+
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.LayoutInflater;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.example.sensors.views.LineChartView;
+
+public class SensorGraphFragment extends Fragment implements SensorEventListener {
+
+    private static final String ARG_SENSOR_TYPE = "sensor_type";
+    private static final String ARG_TITLE = "title";
+    private static final String ARG_MODE = "mode";
+
+    private SensorManager sensorManager;
+    private Sensor sensor;
+
+    private TextView valueView;
+    private LineChartView chartView;
+
+    private int sensorType;
+    private String title;
+    private String mode;
+
+    private final Handler simulationHandler = new Handler(Looper.getMainLooper());
+    private float simulationTime = 0f;
+
+    public static SensorGraphFragment newInstance(
+            int sensorType,
+            String title,
+            String mode) {
+
+        SensorGraphFragment fragment = new SensorGraphFragment();
+
+        Bundle args = new Bundle();
+        args.putInt(ARG_SENSOR_TYPE, sensorType);
+        args.putString(ARG_TITLE, title);
+        args.putString(ARG_MODE, mode);
+
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup parent,
+            @Nullable Bundle savedInstanceState) {
+
+        sensorType = requireArguments().getInt(ARG_SENSOR_TYPE);
+        title = requireArguments().getString(ARG_TITLE);
+        mode = requireArguments().getString(ARG_MODE);
+
+        sensorManager = (SensorManager)
+                requireActivity().getSystemService(Context.SENSOR_SERVICE);
+
+        sensor = sensorManager.getDefaultSensor(sensorType);
+
+        LinearLayout layout = new LinearLayout(requireContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(24, 24, 24, 24);
+
+        TextView titleView = new TextView(requireContext());
+        titleView.setText(title);
+        titleView.setTextSize(22);
+        titleView.setPadding(0, 0, 0, 20);
+
+        valueView = new TextView(requireContext());
+        valueView.setTextSize(18);
+        valueView.setPadding(0, 0, 0, 20);
+
+        chartView = new LineChartView(requireContext());
+        chartView.setLayoutParams(
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        600));
+
+        layout.addView(titleView);
+        layout.addView(valueView);
+        layout.addView(chartView);
+
+        return layout;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (sensor != null) {
+            sensorManager.registerListener(
+                    this,
+                    sensor,
+                    SensorManager.SENSOR_DELAY_NORMAL);
+        } else {
+            valueView.setText("Capteur indisponible. Simulation activée.");
+            startSimulation();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        sensorManager.unregisterListener(this);
+        simulationHandler.removeCallbacksAndMessages(null);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        float value = extractValue(event.values);
+        updateUi(value);
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
+    private float extractValue(float[] values) {
+        if ("MAGNITUDE".equals(mode)) {
+            return (float) Math.sqrt(
+                    values[0] * values[0]
+                            + values[1] * values[1]
+                            + values[2] * values[2]);
+        }
+
+        return values[0];
+    }
+
+    private void updateUi(float value) {
+        valueView.setText("Valeur détectée : " + value);
+        chartView.addValue(value);
+    }
+
+    private void startSimulation() {
+        simulationHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                simulationTime++;
+
+                float value;
+
+                if (sensorType == Sensor.TYPE_AMBIENT_TEMPERATURE) {
+                    value = 24f + (float) Math.sin(simulationTime / 5f) * 3f;
+                } else if (sensorType == Sensor.TYPE_RELATIVE_HUMIDITY) {
+                    value = 55f + (float) Math.sin(simulationTime / 7f) * 15f;
+                } else if (sensorType == Sensor.TYPE_PROXIMITY) {
+                    value = simulationTime % 6 < 3 ? 0f : 5f;
+                } else if (sensorType == Sensor.TYPE_MAGNETIC_FIELD) {
+                    value = 45f + (float) Math.sin(simulationTime / 4f) * 10f;
+                } else {
+                    value = (float) Math.sin(simulationTime);
+                }
+
+                updateUi(value);
+                simulationHandler.postDelayed(this, 1000);
+            }
+        }, 1000);
+    }
+}
+
+Explication du code
+SensorGraphFragment est un fragment réutilisable.
+La méthode newInstance() reçoit le type du capteur, le titre de l’écran et le mode de lecture.
+onResume() démarre l’écoute du capteur.
+onPause() arrête l’écoute du capteur pour économiser la batterie.
+onSensorChanged() est appelée automatiquement à chaque nouvelle mesure.
+extractValue() permet de choisir la valeur à afficher.
+Pour un capteur simple, la valeur utilisée est values[0].
+Pour le champ magnétique, trois valeurs sont reçues : x, y, z. Le mode MAGNITUDE calcule la norme :
+
+sqrt(x² + y² + z²)
+
+Cette norme permet d’afficher une seule courbe représentant l’intensité globale du champ magnétique.
+Étape 2 — Relier les menus aux capteurs
+Dans MainActivity.java, ajouter la méthode suivante :
+
+private void openFragment(Fragment fragment) {
+    getSupportFragmentManager()
+            .beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit();
+}
+
+Puis ajouter les appels suivants dans la gestion du menu :
+
+if (id == R.id.menu_temperature) {
+    openFragment(
+            SensorGraphFragment.newInstance(
+                    Sensor.TYPE_AMBIENT_TEMPERATURE,
+                    "Température ambiante",
+                    "FIRST_VALUE"));
+}
+
+if (id == R.id.menu_humidity) {
+    openFragment(
+            SensorGraphFragment.newInstance(
+                    Sensor.TYPE_RELATIVE_HUMIDITY,
+                    "Humidité relative",
+                    "FIRST_VALUE"));
+}
+
+if (id == R.id.menu_proximity) {
+    openFragment(
+            SensorGraphFragment.newInstance(
+                    Sensor.TYPE_PROXIMITY,
+                    "Capteur de proximité",
+                    "FIRST_VALUE"));
+}
+
+if (id == R.id.menu_magnetic) {
+    openFragment(
+            SensorGraphFragment.newInstance(
+                    Sensor.TYPE_MAGNETIC_FIELD,
+                    "Champ magnétique",
+                    "MAGNITUDE"));
+}
+
+Travail à réaliser
+
+    Lancer l’application.
+    Ouvrir le menu Température.
+    Observer le graphe.
+    Ouvrir le menu Humidité.
+    Observer le graphe.
+    Ouvrir le menu Proximité.
+    Approcher la main du capteur de proximité.
+    Ouvrir le menu Magnetic.
+    Tourner le téléphone ou approcher un objet métallique.
+
+Résultat attendu
+
+    La température doit évoluer dans le temps.
+    L’humidité doit évoluer dans le temps.
+    La proximité doit indiquer une valeur faible lorsqu’un objet est proche.
+    Le champ magnétique doit changer lorsque l’environnement magnétique ou l’orientation du téléphone change.
+
+
+Étapes
+Partie 5 — Accéléromètre, gravité et gyroscope
+Objectif pédagogique
+Cette partie ajoute les capteurs de mouvement. Le TP demande de mesurer le changement d’accélération selon les axes x, y, z, de mesurer la gravité sans accélération et de mesurer le taux de rotation en radians par seconde.
+Uploaded Image
+Étape 1 — Créer le fragment MotionSensorFragment
+
+package com.example.sensors.fragments;
+
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.LayoutInflater;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.example.sensors.views.LineChartView;
+
+public class MotionSensorFragment extends Fragment implements SensorEventListener {
+
+    private static final String ARG_SENSOR_TYPE = "sensor_type";
+    private static final String ARG_TITLE = "title";
+
+    private SensorManager sensorManager;
+    private Sensor sensor;
+
+    private TextView valuesView;
+    private LineChartView chartView;
+
+    private int sensorType;
+    private String title;
+
+    public static MotionSensorFragment newInstance(int sensorType, String title) {
+        MotionSensorFragment fragment = new MotionSensorFragment();
+
+        Bundle args = new Bundle();
+        args.putInt(ARG_SENSOR_TYPE, sensorType);
+        args.putString(ARG_TITLE, title);
+
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup parent,
+            @Nullable Bundle savedInstanceState) {
+
+        sensorType = requireArguments().getInt(ARG_SENSOR_TYPE);
+        title = requireArguments().getString(ARG_TITLE);
+
+        sensorManager = (SensorManager)
+                requireActivity().getSystemService(Context.SENSOR_SERVICE);
+
+        sensor = sensorManager.getDefaultSensor(sensorType);
+
+        LinearLayout layout = new LinearLayout(requireContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(24, 24, 24, 24);
+
+        TextView titleView = new TextView(requireContext());
+        titleView.setText(title);
+        titleView.setTextSize(22);
+
+        valuesView = new TextView(requireContext());
+        valuesView.setTextSize(18);
+        valuesView.setPadding(0, 24, 0, 24);
+
+        chartView = new LineChartView(requireContext());
+        chartView.setLayoutParams(
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        600));
+
+        layout.addView(titleView);
+        layout.addView(valuesView);
+        layout.addView(chartView);
+
+        return layout;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (sensor != null) {
+            sensorManager.registerListener(
+                    this,
+                    sensor,
+                    SensorManager.SENSOR_DELAY_NORMAL);
+        } else {
+            valuesView.setText("Capteur indisponible sur ce dispositif.");
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
+
+        float magnitude = (float) Math.sqrt(x * x + y * y + z * z);
+
+        valuesView.setText(
+                "X : " + x + "\n"
+                        + "Y : " + y + "\n"
+                        + "Z : " + z + "\n"
+                        + "Norme : " + magnitude);
+
+        chartView.addValue(magnitude);
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+}
+
+Explication du code
+Ce fragment lit les capteurs qui retournent trois valeurs.
+
+    event.values[0] correspond à l’axe x.
+    event.values[1] correspond à l’axe y.
+    event.values[2] correspond à l’axe z.
+
+La norme permet de représenter l’intensité globale du mouvement ou de la rotation :
+
+sqrt(x² + y² + z²)
+
+Cette valeur est envoyée au graphe.
+Étape 2 — Ajouter les entrées dans le menu
+Ajouter les menus suivants :
+
+<item
+    android:id="@+id/menu_accelerometer"
+    android:title="Accéléromètre" />
+
+<item
+    android:id="@+id/menu_gravity"
+    android:title="Gravité" />
+
+<item
+    android:id="@+id/menu_gyroscope"
+    android:title="Gyroscope" />
+
+Étape 3 — Relier les menus aux fragments
+
+if (id == R.id.menu_accelerometer) {
+    openFragment(
+            MotionSensorFragment.newInstance(
+                    Sensor.TYPE_ACCELEROMETER,
+                    "Accéléromètre : x, y, z"));
+}
+
+if (id == R.id.menu_gravity) {
+    openFragment(
+            MotionSensorFragment.newInstance(
+                    Sensor.TYPE_GRAVITY,
+                    "Gravité : x, y, z"));
+}
+
+if (id == R.id.menu_gyroscope) {
+    openFragment(
+            MotionSensorFragment.newInstance(
+                    Sensor.TYPE_GYROSCOPE,
+                    "Gyroscope : rad/s"));
+}
+
+Travail à réaliser
+
+    Ouvrir le menu Accéléromètre.
+    Poser le téléphone à plat.
+    Observer la valeur proche de 9,81 m/s².
+    Incliner le téléphone.
+    Observer le changement des axes x, y, z.
+    Ouvrir le menu Gravité.
+    Comparer les valeurs avec celles de l’accéléromètre.
+    Ouvrir le menu Gyroscope.
+    Faire tourner doucement le téléphone.
+    Observer la variation de la rotation.
+
+Résultat attendu
+
+    L’accéléromètre affiche l’accélération incluant la gravité.
+    Le capteur de gravité affiche uniquement la composante gravitationnelle.
+    Le gyroscope affiche le taux de rotation selon les trois axes.
+
+
+Étapes
+Partie 6 — Compteur de pas et économie d’énergie
+Objectif pédagogique
+Cette partie ajoute un compteur de pas. Le TP demande de mesurer les pas de l’utilisateur depuis le dernier redémarrage du dispositif et de préserver la batterie.
+Étape 1 — Ajouter la permission
+Dans AndroidManifest.xml, ajouter :
+
+<uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+
+Étape 2 — Créer le fragment StepCounterFragment
+
+package com.example.sensors.fragments;
+
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.LayoutInflater;
+import android.widget.TextView;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+
+public class StepCounterFragment extends Fragment implements SensorEventListener {
+
+    private SensorManager sensorManager;
+    private Sensor stepCounterSensor;
+    private TextView textView;
+
+    private float initialSteps = -1;
+
+    private final ActivityResultLauncher<String> permissionLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.RequestPermission(),
+                    isGranted -> {
+                        if (isGranted) {
+                            startSensor();
+                        } else {
+                            textView.setText("Permission refusée.");
+                        }
+                    });
+
+    @Nullable
+    @Override
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup parent,
+            @Nullable Bundle savedInstanceState) {
+
+        textView = new TextView(requireContext());
+        textView.setTextSize(22);
+        textView.setPadding(24, 24, 24, 24);
+
+        sensorManager = (SensorManager)
+                requireActivity().getSystemService(Context.SENSOR_SERVICE);
+
+        stepCounterSensor =
+                sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+
+        return textView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (stepCounterSensor == null) {
+            textView.setText("Capteur de pas indisponible.");
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                && ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACTIVITY_RECOGNITION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            permissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION);
+        } else {
+            startSensor();
+        }
+    }
+
+    private void startSensor() {
+        sensorManager.registerListener(
+                this,
+                stepCounterSensor,
+                SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        float totalStepsSinceBoot = event.values[0];
+
+        if (initialSteps < 0) {
+            initialSteps = totalStepsSinceBoot;
+        }
+
+        int sessionSteps = (int) (totalStepsSinceBoot - initialSteps);
+
+        textView.setText(
+                "Pas depuis le dernier redémarrage : "
+                        + (int) totalStepsSinceBoot
+                        + "\n\nPas de la session : "
+                        + sessionSteps);
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+}
+
+Explication du code
+TYPE_STEP_COUNTER donne le nombre de pas depuis le dernier redémarrage du téléphone.
+initialSteps mémorise la première valeur reçue.
+sessionSteps calcule les pas effectués depuis l’ouverture du fragment.
+onPause() arrête l’écoute du capteur.
+Cette instruction est importante pour préserver la batterie :
+
+sensorManager.unregisterListener(this);
+
+Étape 3 — Ajouter le menu
+
+<item
+    android:id="@+id/menu_steps"
+    android:title="Compteur de pas" />
+
+Dans MainActivity.java :
+
+if (id == R.id.menu_steps) {
+    openFragment(new StepCounterFragment());
+}
+
+Résultat attendu
+L’écran affiche :
+
+Pas depuis le dernier redémarrage
+Pas de la session
+
+Le compteur doit augmenter lorsque l’utilisateur marche avec le téléphone.
+
+
+Étapes
+Partie 7 — Boussole numérique
+Objectif pédagogique
+Cette partie permet de déterminer la position du téléphone par rapport au monde extérieur. Le TP demande la création d’un fragment de type boussole.
+Principe
+Une boussole peut être construite à partir de deux capteurs :
+
+Accéléromètre
+Magnétomètre
+
+L’accéléromètre donne l’orientation du téléphone par rapport à la gravité.
+Le magnétomètre donne la direction du champ magnétique terrestre.
+Créer le fragment CompassFragment
+
+package com.example.sensors.fragments;
+
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.LayoutInflater;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+public class CompassFragment extends Fragment implements SensorEventListener {
+
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
+    private Sensor magnetometer;
+
+    private TextView textView;
+
+    private final float[] gravityValues = new float[3];
+    private final float[] magneticValues = new float[3];
+
+    private boolean hasGravity = false;
+    private boolean hasMagnetic = false;
+
+    @Nullable
+    @Override
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup parent,
+            @Nullable Bundle savedInstanceState) {
+
+        textView = new TextView(requireContext());
+        textView.setTextSize(22);
+        textView.setPadding(24, 24, 24, 24);
+
+        sensorManager = (SensorManager)
+                requireActivity().getSystemService(Context.SENSOR_SERVICE);
+
+        accelerometer =
+                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        magnetometer =
+                sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+        return textView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (accelerometer != null) {
+            sensorManager.registerListener(
+                    this,
+                    accelerometer,
+                    SensorManager.SENSOR_DELAY_UI);
+        }
+
+        if (magnetometer != null) {
+            sensorManager.registerListener(
+                    this,
+                    magnetometer,
+                    SensorManager.SENSOR_DELAY_UI);
+        }
+
+        if (accelerometer == null || magnetometer == null) {
+            textView.setText("Boussole indisponible : capteur manquant.");
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            System.arraycopy(event.values, 0, gravityValues, 0, 3);
+            hasGravity = true;
+        }
+
+        if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+            System.arraycopy(event.values, 0, magneticValues, 0, 3);
+            hasMagnetic = true;
+        }
+
+        if (hasGravity && hasMagnetic) {
+            float[] rotationMatrix = new float[9];
+            float[] orientation = new float[3];
+
+            boolean success = SensorManager.getRotationMatrix(
+                    rotationMatrix,
+                    null,
+                    gravityValues,
+                    magneticValues);
+
+            if (success) {
+                SensorManager.getOrientation(rotationMatrix, orientation);
+
+                float azimuthRadians = orientation[0];
+                float azimuthDegrees =
+                        (float) Math.toDegrees(azimuthRadians);
+
+                if (azimuthDegrees < 0) {
+                    azimuthDegrees += 360;
+                }
+
+                textView.setText(
+                        "Direction : " + azimuthDegrees + "°\n"
+                                + getDirectionName(azimuthDegrees));
+            }
+        }
+    }
+
+    private String getDirectionName(float degree) {
+        if (degree >= 337.5 || degree < 22.5) {
+            return "Nord";
+        } else if (degree < 67.5) {
+            return "Nord-Est";
+        } else if (degree < 112.5) {
+            return "Est";
+        } else if (degree < 157.5) {
+            return "Sud-Est";
+        } else if (degree < 202.5) {
+            return "Sud";
+        } else if (degree < 247.5) {
+            return "Sud-Ouest";
+        } else if (degree < 292.5) {
+            return "Ouest";
+        } else {
+            return "Nord-Ouest";
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+}
+
+Explication du code
+Deux tableaux sont utilisés :
+
+gravityValues
+magneticValues
+
+Le premier garde les valeurs de l’accéléromètre.
+Le second garde les valeurs du magnétomètre.
+Lorsque les deux mesures sont disponibles, getRotationMatrix() calcule la matrice de rotation.
+getOrientation() extrait l’orientation du téléphone.
+L’angle obtenu est converti en degrés.
+La méthode getDirectionName() transforme l’angle en direction : Nord, Est, Sud, Ouest, etc.
+Ajout au menu
+
+<item
+    android:id="@+id/menu_compass"
+    android:title="Boussole" />
+
+Dans MainActivity.java :
+
+if (id == R.id.menu_compass) {
+    openFragment(new CompassFragment());
+}
+
+
+Étapes
+Partie 8 — Reconnaissance simple d’activité
+Objectif pédagogique
+Cette partie répond à la dernière demande du TP : créer une application capable de déterminer si l’utilisateur est en train de marcher, sauter, être assis ou debout à l’aide de l’accéléromètre.
+Principe pédagogique
+L’accéléromètre mesure une accélération qui contient deux composantes :
+
+Gravité
+Mouvement réel du téléphone
+
+Pour analyser le mouvement, il faut réduire l’effet de la gravité.
+Une méthode simple consiste à utiliser un filtre passe-bas pour estimer la gravité, puis à la retirer du signal mesuré.
+Créer le fragment ActivityRecognitionFragment
+
+package com.example.sensors.fragments;
+
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.LayoutInflater;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class ActivityRecognitionFragment extends Fragment
+        implements SensorEventListener {
+
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
+
+    private TextView resultView;
+
+    private final float[] gravity = new float[3];
+    private final Queue<Float> movementWindow = new LinkedList<>();
+
+    private static final int WINDOW_SIZE = 30;
+    private static final float ALPHA = 0.8f;
+
+    @Nullable
+    @Override
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup parent,
+            @Nullable Bundle savedInstanceState) {
+
+        resultView = new TextView(requireContext());
+        resultView.setTextSize(22);
+        resultView.setPadding(24, 24, 24, 24);
+
+        sensorManager = (SensorManager)
+                requireActivity().getSystemService(Context.SENSOR_SERVICE);
+
+        accelerometer =
+                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        return resultView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (accelerometer != null) {
+            sensorManager.registerListener(
+                    this,
+                    accelerometer,
+                    SensorManager.SENSOR_DELAY_GAME);
+        } else {
+            resultView.setText("Accéléromètre indisponible.");
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
+
+        gravity[0] = ALPHA * gravity[0] + (1 - ALPHA) * x;
+        gravity[1] = ALPHA * gravity[1] + (1 - ALPHA) * y;
+        gravity[2] = ALPHA * gravity[2] + (1 - ALPHA) * z;
+
+        float linearX = x - gravity[0];
+        float linearY = y - gravity[1];
+        float linearZ = z - gravity[2];
+
+        float movement = (float) Math.sqrt(
+                linearX * linearX
+                        + linearY * linearY
+                        + linearZ * linearZ);
+
+        addMovementValue(movement);
+
+        String activity = classifyActivity(x, y, z);
+
+        resultView.setText(
+                "X : " + x + "\n"
+                        + "Y : " + y + "\n"
+                        + "Z : " + z + "\n\n"
+                        + "Mouvement : " + movement + "\n\n"
+                        + "Activité détectée : " + activity);
+    }
+
+    private void addMovementValue(float movement) {
+        if (movementWindow.size() >= WINDOW_SIZE) {
+            movementWindow.poll();
+        }
+
+        movementWindow.add(movement);
+    }
+
+    private String classifyActivity(float x, float y, float z) {
+
+        if (movementWindow.size() < WINDOW_SIZE) {
+            return "Calibration...";
+        }
+
+        float mean = 0f;
+        float max = 0f;
+
+        for (float value : movementWindow) {
+            mean += value;
+            max = Math.max(max, value);
+        }
+
+        mean = mean / movementWindow.size();
+
+        float variance = 0f;
+
+        for (float value : movementWindow) {
+            variance += (value - mean) * (value - mean);
+        }
+
+        variance = variance / movementWindow.size();
+
+        float standardDeviation = (float) Math.sqrt(variance);
+
+        if (max > 10f) {
+            return "Saut";
+        }
+
+        if (standardDeviation > 1.2f) {
+            return "Marche";
+        }
+
+        if (Math.abs(z) > 8f) {
+            return "Stable / téléphone à plat";
+        }
+
+        if (Math.abs(y) > 7f || Math.abs(x) > 7f) {
+            return "Assis ou debout selon l’orientation du téléphone";
+        }
+
+        return "Position stable";
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+}
+
+Explication du code
+La constante ALPHA contrôle le filtre passe-bas.
+
+gravity[0] = ALPHA * gravity[0] + (1 - ALPHA) * x;
+
+Cette formule estime progressivement la gravité.
+Ensuite, la gravité est retirée du signal :
+
+float linearX = x - gravity[0];
+float linearY = y - gravity[1];
+float linearZ = z - gravity[2];
+
+La variable movement mesure l’intensité du mouvement.
+Une fenêtre de 30 valeurs est utilisée pour éviter une décision trop rapide.
+La moyenne et l’écart-type permettent de distinguer les états.
+Un pic fort indique un saut.
+Une variation régulière indique une marche.
+Une variation faible indique une position stable.
+Ajout au menu
+
+<item
+    android:id="@+id/menu_activity"
+    android:title="Reconnaissance d’activité" />
+
+Dans MainActivity.java :
+
+if (id == R.id.menu_activity) {
+    openFragment(new ActivityRecognitionFragment());
+}
+
+
+Étapes
+Partie 9 — Intégration finale dans MainActivity
+Objectif pédagogique
+Cette partie relie toutes les fonctionnalités dans une seule application.
+Méthode commune d’ouverture des fragments
+Dans MainActivity.java, ajouter :
+
+private void openFragment(Fragment fragment) {
+    getSupportFragmentManager()
+            .beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit();
+}
+
+Code de sélection du menu
+
+if (id == R.id.menu_sensors) {
+    openFragment(new SensorsListFragment());
+}
+
+if (id == R.id.menu_temperature) {
+    openFragment(
+            SensorGraphFragment.newInstance(
+                    Sensor.TYPE_AMBIENT_TEMPERATURE,
+                    "Température ambiante",
+                    "FIRST_VALUE"));
+}
+
+if (id == R.id.menu_humidity) {
+    openFragment(
+            SensorGraphFragment.newInstance(
+                    Sensor.TYPE_RELATIVE_HUMIDITY,
+                    "Humidité relative",
+                    "FIRST_VALUE"));
+}
+
+if (id == R.id.menu_proximity) {
+    openFragment(
+            SensorGraphFragment.newInstance(
+                    Sensor.TYPE_PROXIMITY,
+                    "Capteur de proximité",
+                    "FIRST_VALUE"));
+}
+
+if (id == R.id.menu_magnetic) {
+    openFragment(
+            SensorGraphFragment.newInstance(
+                    Sensor.TYPE_MAGNETIC_FIELD,
+                    "Champ magnétique",
+                    "MAGNITUDE"));
+}
+
+if (id == R.id.menu_accelerometer) {
+    openFragment(
+            MotionSensorFragment.newInstance(
+                    Sensor.TYPE_ACCELEROMETER,
+                    "Accéléromètre : x, y, z"));
+}
+
+if (id == R.id.menu_gravity) {
+    openFragment(
+            MotionSensorFragment.newInstance(
+                    Sensor.TYPE_GRAVITY,
+                    "Gravité : x, y, z"));
+}
+
+if (id == R.id.menu_gyroscope) {
+    openFragment(
+            MotionSensorFragment.newInstance(
+                    Sensor.TYPE_GYROSCOPE,
+                    "Gyroscope : rad/s"));
+}
+
+if (id == R.id.menu_steps) {
+    openFragment(new StepCounterFragment());
+}
+
+if (id == R.id.menu_compass) {
+    openFragment(new CompassFragment());
+}
+
+if (id == R.id.menu_activity) {
+    openFragment(new ActivityRecognitionFragment());
+}
+
+
+
+Étapes
+Partie 10 — Tests et validation
+Objectif pédagogique
+Cette partie permet de vérifier que l’application répond à toutes les exigences du TP.
+Test 1 — Liste des capteurs
+Ouvrir le menu Sensors.
+Vérifier que chaque capteur affiche :
+
+Name
+Vendor
+Version
+Type
+Int Type
+Resolution
+Power
+Maximum Range
+Min Delay
+
+Test 2 — Température
+Ouvrir le menu Température.
+Observer la valeur affichée.
+Observer le graphe.
+Sur émulateur, la simulation peut être activée si le capteur n’existe pas.
+Test 3 — Humidité
+Ouvrir le menu Humidité.
+Observer le graphe.
+Sur émulateur, la simulation peut être utilisée.
+Test 4 — Proximité
+Ouvrir le menu Proximité.
+Approcher un objet du téléphone.
+La valeur doit changer.
+Une valeur proche de 0 indique généralement un objet proche.
+Test 5 — Champ magnétique
+Ouvrir le menu Magnetic.
+Tourner le téléphone.
+Approcher un objet métallique.
+La norme du champ magnétique doit varier.
+Test 6 — Accéléromètre
+Ouvrir le menu Accéléromètre.
+Poser le téléphone à plat.
+Incliner le téléphone.
+Observer les axes x, y, z.
+Test 7 — Gravité
+Ouvrir le menu Gravité.
+Comparer les valeurs avec celles de l’accéléromètre.
+Test 8 — Gyroscope
+Ouvrir le menu Gyroscope.
+Faire tourner le téléphone.
+Observer les valeurs en radians par seconde.
+Test 9 — Compteur de pas
+Ouvrir le menu Compteur de pas.
+Marcher avec le téléphone.
+Observer l’augmentation du nombre de pas.
+Test 10 — Boussole
+Ouvrir le menu Boussole.
+Tourner le téléphone.
+Vérifier le changement de direction.
+Test 11 — Reconnaissance d’activité
+Ouvrir le menu Reconnaissance d’activité.
+Tester les états suivants :
+
+Téléphone stable
+Marche
+Mouvement brusque
+Changement d’orientation
+
+Observer l’activité détectée.
+
+Étapes
+Synthèse pédagogique
+Ce lab montre comment une application Android peut exploiter les capteurs embarqués d’un téléphone. La première partie introduit la découverte des capteurs disponibles. La deuxième partie ajoute la visualisation graphique des mesures. Les parties suivantes exploitent les capteurs de mouvement pour mesurer l’accélération, la gravité, la rotation, les pas et l’orientation. La dernière partie applique une logique simple de classification pour reconnaître une activité à partir de l’accéléromètre.
+La solution proposée reste pédagogique. La reconnaissance d’activité repose sur des seuils simples. Pour une application industrielle ou scientifique, il serait nécessaire de collecter des données réelles, d’annoter les activités, d’entraîner un modèle d’apprentissage automatique et d’évaluer la précision du modèle sur plusieurs utilisateurs et plusieurs téléphones.
+
+''''
